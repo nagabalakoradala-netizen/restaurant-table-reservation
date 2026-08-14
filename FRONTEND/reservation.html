@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make a Reservation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <div class="logo">🍽️ Foodie Table</div>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="reservation.html">Reservation</a>
+    </nav>
+</header>
+
+<section class="reservation-section">
+
+    <div class="reservation-box">
+
+        <h1>Book Your Table</h1>
+        <p>Fill in the details to reserve your table.</p>
+
+        <form id="reservationForm">
+
+            <label for="name">Name</label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Enter your name"
+                required
+            >
+
+            <label for="email">Email</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+            >
+
+            <label for="phone">Phone Number</label>
+            <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="Enter your phone number"
+                required
+            >
+
+            <label for="guests">Number of Guests</label>
+            <input
+                type="number"
+                id="guests"
+                name="guests"
+                min="1"
+                max="20"
+                placeholder="Number of guests"
+                required
+            >
+
+            <label for="date">Reservation Date</label>
+            <input
+                type="date"
+                id="date"
+                name="date"
+                required
+            >
+
+            <label for="time">Reservation Time</label>
+            <input
+                type="time"
+                id="time"
+                name="time"
+                required
+            >
+
+            <label for="message">Special Request</label>
+            <textarea
+                id="message"
+                name="message"
+                placeholder="Any special request?"
+                rows="4"
+            ></textarea>
+
+            <button type="submit" class="btn">
+                Reserve Table
+            </button>
+
+        </form>
+
+        <p id="responseMessage"></p>
+
+    </div>
+
+</section>
+
+<script>
+    const form = document.getElementById("reservationForm");
+    const responseMessage = document.getElementById("responseMessage");
+
+    form.addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+        const reservationData = {
+    customerName: document.getElementById("name").value,
+    phone: document.getElementById("phone").value,
+    date: document.getElementById("date").value,
+    time: document.getElementById("time").value,
+    guests: Number(document.getElementById("guests").value),
+    tableNumber: 1
+};
+
+        try {
+
+            const response = await fetch(
+                "http://localhost:5000/api/reservations",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(reservationData)
+                }
+            );
+
+            const data = await response.json();
+
+            if (response.ok) {
+                responseMessage.textContent =
+                    "✅ Reservation successful!";
+
+                responseMessage.className = "success";
+
+                form.reset();
+            } else {
+                responseMessage.textContent =
+                    data.message || "❌ Reservation failed.";
+
+                responseMessage.className = "error";
+            }
+
+        } catch (error) {
+
+            responseMessage.textContent =
+                "❌ Cannot connect to the server.";
+
+            responseMessage.className = "error";
+
+            console.error(error);
+        }
+
+    });
+</script>
+
+</body>
+</html>
